@@ -23,19 +23,14 @@ body {
 }
 
 .main-layout-table {
-  display: block;
-  overflow: hidden;
   width: 100%;
   height: 500px;
   table-layout: fixed;
 }
 
 .left-layout-column{
-  height: 500px;
   padding: 2px;
   border: 1px dashed black;
-  overflow: hidden;
-  white-space: nowrap;
 }
 
 .right-layout-column{

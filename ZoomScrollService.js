@@ -1,37 +1,30 @@
 var ZoomScrollService = function(options){
 
-  var viewport = options.viewport;
-  //viewport.css('overflow', 'hidden');
-  //viewport.width(400).height(400);
-  viewport.mCustomScrollbar({
-    axis: "xy"
-  });
-
-  /*// all are ko observables
   this.viewport = options.viewport;
   this.content = options.content;
+
+  //viewport.css('overflow', 'hidden');
+  //viewport.width(400).height(400);
+  this.viewport.mCustomScrollbar({
+    axis: "xy"
+  });
 
   // scalars
   this.zoomValue = 1;
   this.originalContentSize = {
-    w: content.width(),
-    h: content.height()
+    w: this.content.width(),
+    h: this.content.height()
   }
 
-  // callbacks
-  this.
+  this.setZoom = function(newValue){
+    this.zoomValue = newValue;
 
+    var newWidth = this.originalContentSize.w * newValue;
+    var newHeight = this.originalContentSize.h * newValue;
 
-  // prepare styling
-  this.contentSize = {
-    w: ko.observable(content.width()),
-    h: ko.observable(content.height())
+    this.content
+      .width(newWidth)
+      .height(newHeight);
   };
 
-  this.viewportSize = {
-    w: ko.observable(viewport.width()),
-    h: ko.observable(viewport.height())
-  };
-
-*/
 }
