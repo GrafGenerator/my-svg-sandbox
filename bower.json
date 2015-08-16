@@ -21,5 +21,8 @@
     "jquery-ui": "~1.11.4",
     "jquery": "~2.1.4",
     "knockout": "~3.3.0"
+  },
+  "devDependencies": {
+    "malihu-custom-scrollbar-plugin": "~3.0.9"
   }
 }
