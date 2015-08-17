@@ -1,8 +1,8 @@
-var ZoomViewModel = function(viewportSelector, contentSelector, sliderSelector){
-	this.viewport = $(viewportSelector);
-	this.content = $(contentSelector);
-	this.sliderElement = $(sliderSelector);
-	this.svg = $(contentSelector + ' svg');
+var ZoomViewModel = function(options){
+	this.viewport = $(options.viewportSelector);
+	this.content = $(options.contentSelector);
+	this.svg = $(options.svgSelector);
+	this.sliderElement = $(options.sliderSelector);
 	this.viewportSize = { w: 0, h: 0 };
 
 	var fitViewport = function(){
@@ -23,11 +23,27 @@ var ZoomViewModel = function(viewportSelector, contentSelector, sliderSelector){
 		viewport: this.viewport,
 		content: this.content,
 		onZoomChanged: function(oldValue,newValue, bounds){
-			this.updateSvgViewport(newValue, bounds);
+			this.updateSvg(newValue, bounds);
+		}.bind(this),
+		onScrollChanged: function(zoomValue, bounds){
+			this.updateSvg(zoomValue, bounds);
 		}.bind(this)
 	});
 
-	this.updateSvgViewport = function(zoomValue, bounds){
+	this.updateSvg = function(zoomValue, bounds){
+		this.positionSvg(zoomValue, bounds);
+		this.viewboxSvg(zoomValue, bounds);
+
+
+	}.bind(this);
+
+	this.positionSvg = function(zoomValue, bounds){
+		this.svg
+			.css('left', bounds.x)
+			.css('top', bounds.y);
+	};
+
+	this.viewboxSvg = function(zoomValue, bounds){
 		var factor = 1 / zoomValue;
 
 		var x = bounds.x * factor;
@@ -37,8 +53,7 @@ var ZoomViewModel = function(viewportSelector, contentSelector, sliderSelector){
 
 		var svgNative = this.svg[0];
 		svgNative.setAttribute('viewBox', x + ' ' + y + ' ' + w + ' ' + h);
-	}.bind(this);
-
+	};
 
 
 
@@ -57,7 +72,6 @@ var ZoomViewModel = function(viewportSelector, contentSelector, sliderSelector){
 			this.processZoom(ui.value);
 		}.bind(this)
 	});
-
 
 
 

@@ -23,8 +23,9 @@
   <tr>
     <td class="left-layout-column">
       <div class="svg-viewport">
-        <div class="svg-content">
-          <svg xmlns="http://www.w3.org/2000/svg"
+        <div class="svg-content-placeholder">
+          <svg class="svg-content"
+               xmlns="http://www.w3.org/2000/svg"
                xmlns:xlink="http://www.w3.org/1999/xlink"
                width="550" height="550"
                preserveAspectRatio="xMidYMid slice">
@@ -767,7 +768,12 @@
 
 <script>
 	(function() {
-		var viewModel = new ZoomViewModel('.svg-viewport', '.svg-viewport .svg-content', '.zoom-slider');
+		var viewModel = new ZoomViewModel({
+      viewportSelector: '.svg-viewport',
+      contentSelector: '.svg-content-placeholder',
+      svgSelector: '.svg-content',
+      sliderSelector: '.zoom-slider'
+    });
 		ko.applyBindings(viewModel);
 	})();
 </script>

@@ -49,11 +49,12 @@ body {
   width: 100%;
 }
 
-.svg-content{
+.svg-content-placeholder{
   display: inline-block;
   border: 1px solid green;
 }
 
-svg{
+.svg-content{
   border: 1px dotted red;
+  position: relative;
 }

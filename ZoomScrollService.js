@@ -3,11 +3,28 @@ var ZoomScrollService = function(options){
   this.viewport = options.viewport;
   this.content = options.content;
   this.onZoomChanged = options.onZoomChanged || function(){};
+  this.onScrollChanged = options.onScrollChanged || function(){};
 
-  //viewport.css('overflow', 'hidden');
-  //viewport.width(400).height(400);
+
+  this.getBounds = function(zoomValue){
+    var width = this.originalContentSize.w * zoomValue;
+    var height = this.originalContentSize.h * zoomValue;
+    var scrollLeft = -this.scrollController.mcs.left;
+    var scrollTop = -this.scrollController.mcs.top;
+
+    return {x: scrollLeft, y: scrollTop, w: width, h: height};
+  };
+
+  this.setScroll = function(){
+    this.onScrollChanged(this.zoomValue, this.getBounds(this.zoomValue));
+  };
+
+
   this.scrollController = this.viewport.mCustomScrollbar({
-    axis: "xy"
+    axis: "xy",
+    callbacks: {
+      whileScrolling: this.setScroll.bind(this)
+    }
   })[0];
 
   // scalars
@@ -15,23 +32,16 @@ var ZoomScrollService = function(options){
   this.originalContentSize = {
     w: this.content.width(),
     h: this.content.height()
-  }
+  };
 
   this.setZoom = function(newValue){
     var oldValue = this.zoomValue;
     this.zoomValue = newValue;
 
-    var newWidth = this.originalContentSize.w * newValue;
-    var newHeight = this.originalContentSize.h * newValue;
+    var newBounds = this.getBounds(newValue);
+    this.content.width(newBounds.w).height(newBounds.h);
 
-    this.content
-      .width(newWidth)
-      .height(newHeight);
-
-    var scrollLeft = this.scrollController.mcs.left;
-    var scrollTop = this.scrollController.mcs.top;
-
-    this.onZoomChanged(oldValue, newValue, {x: scrollLeft, y: scrollTop, w: newWidth, h: newHeight})
+    this.onZoomChanged(oldValue, newValue, newBounds);
   };
 
 }
