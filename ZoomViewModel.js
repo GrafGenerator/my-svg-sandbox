@@ -1,22 +1,45 @@
 var ZoomViewModel = function(viewportSelector, contentSelector, sliderSelector){
-	var viewport = $(viewportSelector);
-	var content = $(contentSelector);
-	var sliderElement = $(sliderSelector);
+	this.viewport = $(viewportSelector);
+	this.content = $(contentSelector);
+	this.sliderElement = $(sliderSelector);
+	this.svg = $(contentSelector + ' svg');
+	this.viewportSize = { w: 0, h: 0 };
 
 	var fitViewport = function(){
-		var parent = this.parent();
-		viewport
-			.width(parent.width())
-			.height(parent.height());
-	}.bind(viewport);
+		var parent = this.viewport.parent();
+		var parentWidth = parent.width();
+		var parentHeight = parent.height();
 
-	viewport.parent().on('resize', fitViewport);
+		this.viewport.width(parentWidth).height(parentHeight);
+		this.svg.attr('width', parentWidth).attr('height', parentHeight);
+
+		this.viewportSize = { w: parentWidth, h: parentHeight };
+	}.bind(this);
+
+	this.viewport.parent().on('resize', fitViewport);
 	fitViewport();
 
 	this.zoomService = new ZoomScrollService({
-		viewport: viewport,
-		content: content
+		viewport: this.viewport,
+		content: this.content,
+		onZoomChanged: function(oldValue,newValue, bounds){
+			this.updateSvgViewport(newValue, bounds);
+		}.bind(this)
 	});
+
+	this.updateSvgViewport = function(zoomValue, bounds){
+		var factor = 1 / zoomValue;
+
+		var x = bounds.x * factor;
+		var y = bounds.y * factor;
+		var w = this.viewportSize.w * factor;
+		var h = this.viewportSize.h * factor;
+
+		var svgNative = this.svg[0];
+		svgNative.setAttribute('viewBox', x + ' ' + y + ' ' + w + ' ' + h);
+	}.bind(this);
+
+
 
 
 	this.processZoom = function(newValue){
@@ -26,7 +49,7 @@ var ZoomViewModel = function(viewportSelector, contentSelector, sliderSelector){
 	var defaultValue = 1;
 	this.sliderValue = ko.observable(defaultValue);
 
-	this.slider = sliderElement.slider({
+	this.slider = this.sliderElement.slider({
 		min: 0.1, max: 10, step: 0.01,
 		value: defaultValue,
 		slide: function(event, ui) {
