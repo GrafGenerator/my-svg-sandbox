@@ -5,6 +5,8 @@ var ZoomViewModel = function(options){
 	this.sliderElement = $(options.sliderSelector);
 	this.viewportSize = { w: 0, h: 0 };
 
+	this.content.css('overflow', 'hidden');
+
 	var fitViewport = function(){
 		var parent = this.viewport.parent();
 		var parentWidth = parent.width();
@@ -22,40 +24,8 @@ var ZoomViewModel = function(options){
 	this.zoomService = new ZoomScrollService({
 		viewport: this.viewport,
 		content: this.content,
-		onZoomChanged: function(oldValue,newValue, bounds){
-			this.updateSvg(newValue, bounds);
-		}.bind(this),
-		onScrollChanged: function(zoomValue, bounds){
-			this.updateSvg(zoomValue, bounds);
-		}.bind(this)
+		svg: this.svg
 	});
-
-	this.updateSvg = function(zoomValue, bounds){
-		this.positionSvg(zoomValue, bounds);
-		this.viewboxSvg(zoomValue, bounds);
-
-
-	}.bind(this);
-
-	this.positionSvg = function(zoomValue, bounds){
-		this.svg
-			.css('left', bounds.x)
-			.css('top', bounds.y);
-	};
-
-	this.viewboxSvg = function(zoomValue, bounds){
-		var factor = 1 / zoomValue;
-
-		var x = bounds.x * factor;
-		var y = bounds.y * factor;
-		var w = this.viewportSize.w * factor;
-		var h = this.viewportSize.h * factor;
-
-		var svgNative = this.svg[0];
-		svgNative.setAttribute('viewBox', x + ' ' + y + ' ' + w + ' ' + h);
-	};
-
-
 
 	this.processZoom = function(newValue){
 		this.zoomService.setZoom(newValue);
@@ -72,8 +42,6 @@ var ZoomViewModel = function(options){
 			this.processZoom(ui.value);
 		}.bind(this)
 	});
-
-
 
 
 	return this;
