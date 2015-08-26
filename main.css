@@ -30,6 +30,8 @@ body {
 
 .left-layout-column{
   padding: 2px;
+  padding-right: 30px;
+  padding-bottom: 30px;
   border: 1px dashed black;
 }
 

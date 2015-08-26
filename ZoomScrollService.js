@@ -21,14 +21,21 @@ var ZoomScrollService = function(options){
   };
 
   this.setScroll = function(){
-    this.updateSvg(this.zoomValue, this.getBounds(this.zoomValue));
-    this.onScrollChanged(this.zoomValue, this.getBounds(this.zoomValue));
+    var bounds = this.getBounds(this.zoomValue);
+
+    if(this.zoomValue >= 1){
+      // TODO: properly move viewpoint
+      // this.moveViewPoint(this.zoomValue, bounds);
+    }
+
+    this.updateSvg(this.zoomValue, bounds);
   };
 
 
   this.scrollController = this.viewport.mCustomScrollbar({
     axis: "xy",
     theme: '3d-thick-dark',
+    scrollbarPosition: "outside",
     callbacks: {
       whileScrolling: this.setScroll.bind(this)
     }
@@ -41,9 +48,21 @@ var ZoomScrollService = function(options){
     h: this.content.height()
   };
 
+
+
+
+  this.moveViewPoint = function(zoomValue, bounds){
+    var nx = bounds.x / this.viewportSize.w * zoomValue;
+    var ny = bounds.y / this.viewportSize.h * zoomValue;
+
+    this.viewPoint = { x: nx, y: ny };
+  };
+
+
+
   this.updateSvg = function(zoomValue, bounds){
-    this.positionSvg(zoomValue, bounds);
     this.viewboxSvg(zoomValue, bounds);
+    this.positionSvg(zoomValue, bounds);
   };
 
   this.positionSvg = function(zoomValue, bounds){
@@ -55,30 +74,18 @@ var ZoomScrollService = function(options){
 
   this.viewboxSvg = function(zoomValue, bounds){
     var viewBox = "";
-    if(zoomValue >= 1){
-      var factor = 1 / zoomValue;
+    var factor = 1 / zoomValue;
 
-      var x = bounds.x * factor;
-      var y = bounds.y * factor;
-      var w = this.viewportSize.w * factor;
-      var h = this.viewportSize.h * factor;
+    var cx = this.viewportSize.w * this.viewPoint.x;
+    var cy = this.viewportSize.h * this.viewPoint.y;
 
-      viewBox = x + ' ' + y + ' ' + w + ' ' + h;
-    }
-    else{
-      var factor = 1 / zoomValue;
+    var w = this.viewportSize.w * factor;
+    var h = this.viewportSize.h * factor;
 
-      var cx = this.viewportSize.w * this.viewPoint.x;
-      var cy = this.viewportSize.h * this.viewPoint.y;
+    var x = cx - w / 2;
+    var y = cy - h / 2;
 
-      var w = this.viewportSize.w * factor;
-      var h = this.viewportSize.h * factor;
-
-      var x = cx - w / 2;
-      var y = cy - h / 2;
-
-      viewBox = x + ' ' + y + ' ' + w + ' ' + h;
-    }
+    viewBox = x + ' ' + y + ' ' + w + ' ' + h;
 
     var svgNative = this.svg[0];
     svgNative.setAttribute('viewBox', viewBox);
@@ -111,13 +118,19 @@ var ZoomScrollService = function(options){
       contentHeight = viewportHeight;
     }
     else{
+      var sx = contentWidth * this.viewPoint.x;
+      var sy = contentHeight * this.viewPoint.y;
 
+      // TODO: update scrollbars properly
+      // this.viewport.mCustomScrollbar("scrollTo", [sx, sy], { callbacks: false });
     }
+
+
+
 
 
     this.content.width(contentWidth).height(contentHeight);
     this.updateSvg(newValue, newBounds);
-    //this.onZoomChanged(oldValue, newValue, newBounds);
   };
 
 }
